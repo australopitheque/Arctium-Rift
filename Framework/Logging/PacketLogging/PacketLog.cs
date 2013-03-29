@@ -50,17 +50,17 @@ namespace Framework.Logging.PacketLogging
                         }
 
                         sb.AppendLine(String.Format("Value: 0x{0:X} ({1})", serverPacket.Opcode, serverPacket.Opcode));
-                        sb.AppendLine(String.Format("Length: {0}", serverPacket.Size - 2));
+                        sb.AppendLine(String.Format("Length: {0}", serverPacket.Size));
 
                         sb.AppendLine("|----------------------------------------------------------------|");
                         sb.AppendLine("| 00  01  02  03  04  05  06  07  08  09  0A  0B  0C  0D  0E  0F |");
                         sb.AppendLine("|----------------------------------------------------------------|");
                         sb.Append("|");
 
-                        if (serverPacket.Size - 2 != 0)
+                        if (serverPacket.Size != 0)
                         {
                             var data = serverPacket.ReadDataToSend().ToList();
-                            data.RemoveRange(0, 4);
+                            data.RemoveRange(0, data.Count - (int)serverPacket.Size);
 
                             byte count = 0;
                             data.ForEach(b =>

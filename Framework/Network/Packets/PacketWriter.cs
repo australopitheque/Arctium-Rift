@@ -32,23 +32,70 @@ namespace Framework.Network.Packets
         public PacketWriter() : base(new MemoryStream()) { }
         public PacketWriter(ServerMessage message, bool isWorldPacket = false) : base(new MemoryStream())
         {
-            WritePacketHeader(message, isWorldPacket);
+            WritePacketHeader(message);
         }
 
-        protected void WritePacketHeader(ServerMessage opcode, bool isWorldPacket = false)
+        protected void WritePacketHeader(ServerMessage opcode)
         {
             Opcode = opcode;
+
+            WriteEncoded((ushort)Opcode);
+
+            Size = (uint)BaseStream.Length;
         }
 
-        public byte[] ReadDataToSend(bool isAuthPacket = false)
+        public byte[] ReadDataToSend()
         {
             byte[] data = new byte[BaseStream.Length];
+
             Seek(0, SeekOrigin.Begin);
 
             for (int i = 0; i < BaseStream.Length; i++)
                 data[i] = (byte)BaseStream.ReadByte();
-           
+
+            Size = (uint)data.Length - Size;
+
+            Seek(0, SeekOrigin.Begin);
+
+            WriteEncoded(data.Length);
+            WriteBytes(data);
+
+            Seek(0, SeekOrigin.Begin);
+
+            data = new byte[BaseStream.Length];
+
+            for (int i = 0; i < BaseStream.Length; i++)
+                data[i] = (byte)BaseStream.ReadByte();
+
             return data;
+        }
+
+        public void WriteEncodedData(int type, int index)
+        {
+            var value = index;
+            value <<= 3;
+            value |= (byte)(type & 7);
+
+            WriteEncoded(value);
+        }
+
+        public void WriteEncoded(long data)
+        {
+            var val = data;
+            var repeat = true;
+
+            for (int i = 0; repeat; i++)
+            {
+                var tmp = (byte)(val & 0x7F);
+
+                val = val >> 7;
+                repeat = val != 0;
+
+                if (repeat)
+                    tmp += 128;
+
+                WriteUInt8(tmp);
+            }
         }
 
         public void WriteInt8(sbyte data)
@@ -142,6 +189,15 @@ namespace Framework.Network.Packets
             buffer.CopyTo(bufferarray, 0);
 
             WriteBytes(bufferarray.ToArray(), Len);
+        }
+
+        public byte[] ToBytes()
+        {
+            using (var ms = new MemoryStream())
+            {
+                BaseStream.CopyTo(ms);
+                return ms.ToArray();
+            }
         }
 
         public void WriteUInt32Pos(uint data, int pos)

@@ -19,5 +19,6 @@ namespace Framework.Constants.Network.Messages
 {
     public enum ClientMessage : ushort
     {
+        ClientEncryptionKey = 0x40A,
     }
 }

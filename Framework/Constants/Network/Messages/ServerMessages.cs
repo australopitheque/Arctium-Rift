@@ -19,5 +19,6 @@ namespace Framework.Constants.Network.Messages
 {
     public enum ServerMessage : ushort
     {
+        EnableCompression = 0x019,
     }
 }

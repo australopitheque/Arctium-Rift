@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Game\Packets\Handlers\Authentication\AuthenticationHandler.cs.cs" />
     <Compile Include="Game\Packets\PacketManager.cs" />
     <Compile Include="SelectionServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -73,9 +74,7 @@
     <Content Include="arctium_world.ico" />
     <None Include="SelectionServer.snk" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Game\Packets\PacketHandler\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
